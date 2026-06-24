@@ -204,72 +204,45 @@ msg = llm_with_tools.invoke(
 for call in msg.tool_calls:
     result = _TOOLS[call["name"]](**call["args"])
     print(call["name"], call["args"], "->", result)
+
+
+def run_tool_messages(tool_messages):
+    for _ in range(6):  # safety cap
+        ai_msg = llm_with_tools.invoke(tool_messages)
+        tool_messages.append(ai_msg)
+        if not ai_msg.tool_calls:
+            break
+        for call in ai_msg.tool_calls:
+            out = _TOOLS[call["name"]](**call["args"])
+            tool_messages.append(ToolMessage(content=str(out), tool_call_id=call["id"]))
+    for msg in tool_messages:
+        msg.pretty_print()
+    return tool_messages
+
+
 # %%
-messages_tool_check: List[AnyMessage] = [
+initial_tool_check: List[AnyMessage] = [
     HumanMessage(
         "Take the list [1,2,3,4], add 10 to every element, then sum the results. "
         "Use the provided tools."
     )
 ]
+initial_tool_check_result = run_tool_messages(initial_tool_check)
+
 
 # %%
-for _ in range(6):  # safety cap
-    ai_msg = llm_with_tools.invoke(messages_tool_check)
-    messages_tool_check.append(ai_msg)
-    if not ai_msg.tool_calls:
-        break
-    for call in ai_msg.tool_calls:
-        out = _TOOLS[call["name"]](**call["args"])
-        messages_tool_check.append(
-            ToolMessage(content=str(out), tool_call_id=call["id"])
-        )
-# %%
-pprint(messages_tool_check[-1].content)
-# ##
-pprint(messages_tool_check[-1])
-# %%
-for msg in messages_tool_check:
-    msg.pretty_print()
-# %%
-messages_tool_check: List[AnyMessage] = [
+check_string_convert: List[AnyMessage] = [
     HumanMessage(
         "How many 'r' s are there in the word 'strawberrry'. Don't change the spelling and use the provided tools. "
     )
 ]
 
+check_string_convert_result = run_tool_messages(check_string_convert)
+
 # %%
-for _ in range(6):  # safety cap
-    ai_msg = llm_with_tools.invoke(messages_tool_check)
-    messages_tool_check.append(ai_msg)
-    if not ai_msg.tool_calls:
-        break
-    for call in ai_msg.tool_calls:
-        out = _TOOLS[call["name"]](**call["args"])
-        messages_tool_check.append(
-            ToolMessage(content=str(out), tool_call_id=call["id"])
-        )
-# %%
-for msg in messages_tool_check:
-    msg.pretty_print()
-# %%
-messages_tool_check: List[AnyMessage] = [
+check_equality_operators: List[AnyMessage] = [
     HumanMessage(
         "While the total is less than 10,000 multiple the values in the list [102, 100, 90, 101,100,110,110] by 10 and keep adding. What does the total come out to."
     )
 ]
-
-# %%
-for _ in range(6):  # safety cap
-    ai_msg = llm_with_tools.invoke(messages_tool_check)
-    messages_tool_check.append(ai_msg)
-    if not ai_msg.tool_calls:
-        break
-    for call in ai_msg.tool_calls:
-        out = _TOOLS[call["name"]](**call["args"])
-        messages_tool_check.append(
-            ToolMessage(content=str(out), tool_call_id=call["id"])
-        )
-# %%
-for msg in messages_tool_check:
-    msg.pretty_print()
-# %%
+check_equality_operators_result = run_tool_messages(check_equality_operators)
