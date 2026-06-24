@@ -103,3 +103,13 @@ for i in {1..5}; do
 done
 echo "TAVILY_API_KEY=\"$TAVILY_API_KEY\"" >> module-4/studio/.env
 ```
+
+
+## Changes to this fork:
+- Removed the use of all subscriptions, includig ones with "free tier"
+- Replaced paid ChatGPT with OllamaChat + gemma4:e4b
+- Addeed Streamlit for UI 
+
+## Current Progress (06/23/2026)
+module-0 changes complete
+module-1 changes in local_model lesson lesson 2 and 3 changed, added lesson2_2 to test streamlit with lesson2
