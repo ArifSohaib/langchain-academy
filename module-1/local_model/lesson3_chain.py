@@ -145,22 +145,21 @@ def reduce_over_list(
 # %%
 
 llm = ChatOllama(model="gemma4:e4b", temperature=0.1)
-llm_with_tools = llm.bind_tools(
-    [
-        multiply,
-        divide,
-        add,
-        sub,
-        pow,
-        split_string,
-        apply_over_list,
-        reduce_over_list,
-        equals,
-        convert_str_to_int,
-        greater_than,
-        less_than,
-    ]
-)
+tool_list = [
+    multiply,
+    divide,
+    add,
+    sub,
+    pow,
+    split_string,
+    apply_over_list,
+    reduce_over_list,
+    equals,
+    convert_str_to_int,
+    greater_than,
+    less_than,
+]
+llm_with_tools = llm.bind_tools(tool_list)
 
 # %%
 
@@ -190,23 +189,16 @@ _TOOLS = {
     "sub": sub,
     "pow": pow,
     "split_string": split_string,
+    "equals": equals,
+    "greater_than": greater_than,
+    "less_than": less_than,
 }
 
-msg = llm_with_tools.invoke(
-    [
-        HumanMessage(
-            "Take the list [1,2,3,4], add 10 to every element, then sum the results. "
-            "Use the tools. You will need two tool calls."
-        )
-    ]
-)
 
-for call in msg.tool_calls:
-    result = _TOOLS[call["name"]](**call["args"])
-    print(call["name"], call["args"], "->", result)
-
-
-def run_tool_messages(tool_messages):
+# %%
+def run_tool_messages(tool_messages, model: str, tool_list: List[Callable]):
+    llm = ChatOllama(model=model, temperature=0.1)
+    llm_with_tools = llm.bind_tools(tool_list)
     for _ in range(6):  # safety cap
         ai_msg = llm_with_tools.invoke(tool_messages)
         tool_messages.append(ai_msg)
@@ -227,7 +219,9 @@ initial_tool_check: List[AnyMessage] = [
         "Use the provided tools."
     )
 ]
-initial_tool_check_result = run_tool_messages(initial_tool_check)
+initial_tool_check_result = run_tool_messages(
+    initial_tool_check, "gemma4:26b", tool_list
+)
 
 
 # %%
@@ -237,7 +231,9 @@ check_string_convert: List[AnyMessage] = [
     )
 ]
 
-check_string_convert_result = run_tool_messages(check_string_convert)
+check_string_convert_result = run_tool_messages(
+    check_string_convert, "gemma4:e4b", tool_list
+)
 
 # %%
 check_equality_operators: List[AnyMessage] = [
@@ -245,4 +241,6 @@ check_equality_operators: List[AnyMessage] = [
         "While the total is less than 10,000 multiple the values in the list [102, 100, 90, 101,100,110,110] by 10 and keep adding. What does the total come out to."
     )
 ]
-check_equality_operators_result = run_tool_messages(check_equality_operators)
+check_equality_operators_result = run_tool_messages(
+    check_equality_operators, "gemma4:e4b", tool_list
+)
