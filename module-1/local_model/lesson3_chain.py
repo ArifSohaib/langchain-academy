@@ -82,12 +82,38 @@ def split_string(a: str) -> list:
     return [char for char in a]
 
 
+def equals(a: str | float | int, b: str | float | int) -> bool:
+    if type(a) is not type(b):
+        return False
+    return a == b
+
+
+def convert_str_to_int(a: str) -> List[int]:
+    return [ord(x) for x in a]
+
+
+def greater_than(a: float | int, b: float | int) -> bool:
+    if type(a) is not type(b):
+        return False
+    return a > b
+
+
+def less_than(a: float | int, b: float | int) -> bool:
+    if type(a) is not type(b):
+        return False
+    return a < b
+
+
 _SCALAR_OPS = {
     "multiply": multiply,
     "divide": divide,
     "add": add,
     "sub": sub,
     "power": pow,
+    "equals": equals,
+    "greater_than": greater_than,
+    "convert_str_to_int": convert_str_to_int,
+    "less_than": less_than,
 }
 
 
@@ -104,7 +130,8 @@ def apply_over_list(
 
 
 def reduce_over_list(
-    op_name: str, lst: List[int | float], operand: int | float
+    op_name: str,
+    lst: List[int | float],
 ) -> int | float:
     """
     Apply a two argument scalar operation to a list and reduce the result
@@ -119,7 +146,20 @@ def reduce_over_list(
 
 llm = ChatOllama(model="gemma4:e4b", temperature=0.1)
 llm_with_tools = llm.bind_tools(
-    [multiply, divide, add, sub, pow, split_string, apply_over_list, reduce_over_list]
+    [
+        multiply,
+        divide,
+        add,
+        sub,
+        pow,
+        split_string,
+        apply_over_list,
+        reduce_over_list,
+        equals,
+        convert_str_to_int,
+        greater_than,
+        less_than,
+    ]
 )
 
 # %%
@@ -186,5 +226,50 @@ for _ in range(6):  # safety cap
 # %%
 pprint(messages_tool_check[-1].content)
 # ##
-pprint(messages_tool_check)
+pprint(messages_tool_check[-1])
+# %%
+for msg in messages_tool_check:
+    msg.pretty_print()
+# %%
+messages_tool_check: List[AnyMessage] = [
+    HumanMessage(
+        "How many 'r' s are there in the word 'strawberrry'. Don't change the spelling and use the provided tools. "
+    )
+]
+
+# %%
+for _ in range(6):  # safety cap
+    ai_msg = llm_with_tools.invoke(messages_tool_check)
+    messages_tool_check.append(ai_msg)
+    if not ai_msg.tool_calls:
+        break
+    for call in ai_msg.tool_calls:
+        out = _TOOLS[call["name"]](**call["args"])
+        messages_tool_check.append(
+            ToolMessage(content=str(out), tool_call_id=call["id"])
+        )
+# %%
+for msg in messages_tool_check:
+    msg.pretty_print()
+# %%
+messages_tool_check: List[AnyMessage] = [
+    HumanMessage(
+        "While the total is less than 10,000 multiple the values in the list [102, 100, 90, 101,100,110,110] by 10 and keep adding. What does the total come out to."
+    )
+]
+
+# %%
+for _ in range(6):  # safety cap
+    ai_msg = llm_with_tools.invoke(messages_tool_check)
+    messages_tool_check.append(ai_msg)
+    if not ai_msg.tool_calls:
+        break
+    for call in ai_msg.tool_calls:
+        out = _TOOLS[call["name"]](**call["args"])
+        messages_tool_check.append(
+            ToolMessage(content=str(out), tool_call_id=call["id"])
+        )
+# %%
+for msg in messages_tool_check:
+    msg.pretty_print()
 # %%
