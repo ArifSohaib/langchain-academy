@@ -108,9 +108,18 @@ echo "TAVILY_API_KEY=\"$TAVILY_API_KEY\"" >> module-4/studio/.env
 ## Changes to this fork:
 - Removed the use of all subscriptions, includig ones with "free tier"
 - Replaced paid ChatGPT with OllamaChat + gemma4:e4b
-- Changed .py files to use with Zed REPL instead
+- Added .py files to use with Zed REPL instead of notebook (reduces memory use significantly)
 - Addeed Streamlit for UI 
 
-## Current Progress (06/23/2026)
-module-0 changes complete
-module-1 changes in local_model lesson lesson 2 and 3 changed, added lesson2_2 to test streamlit with lesson2
+## Updates (06/23/2026)
+- module-0 changes complete
+- module-1 changes in local_model lesson lesson 2 and 3 changed, added lesson2_2 to test streamlit with lesson2
+
+
+## Updates (06/24/2026)
+- module-1 added lesson3_chain.py to test message chains using LangGraph
+- module-1 tested message chain printout with streamlit, found that formatted results print very well
+- module-1 added composable tools that map a function to a list or reduce a function over a list of scalar numbers
+- module-1 found that composable tools only work when explicitly defined and not using something like Callable or Func
+- module-1 tested multi-tool calling with message chain. Multi-tool calling does not work directly
+-
