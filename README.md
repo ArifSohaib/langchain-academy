@@ -108,6 +108,7 @@ echo "TAVILY_API_KEY=\"$TAVILY_API_KEY\"" >> module-4/studio/.env
 ## Changes to this fork:
 - Removed the use of all subscriptions, includig ones with "free tier"
 - Replaced paid ChatGPT with OllamaChat + gemma4:e4b
+- Changed .py files to use with Zed REPL instead
 - Addeed Streamlit for UI 
 
 ## Current Progress (06/23/2026)
