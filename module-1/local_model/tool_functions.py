@@ -1,7 +1,9 @@
 """## Tools used in other files"""
 
 from functools import reduce
-from typing import List, Tuple
+from typing import List, Optional, Tuple
+
+from typing_extensions import Callable
 
 
 def multiply(a: int | float, b: int | float) -> int | float:
@@ -61,13 +63,12 @@ _SCALAR_OPS = {
     "power": pow,
     "equals": equals,
     "greater_than": greater_than,
-    "convert_str_to_int": convert_str_to_int,
     "less_than": less_than,
 }
 
 
 def apply_over_list(
-    op_name: str, lst: List[int | float], operand: int | float
+    op_name: str, lst: List[int | float], operand: int | float, cond: Optional[bool]
 ) -> List[int | float]:
     """
     Apply a two argument scalar scalar operation to every element of a list
@@ -75,12 +76,13 @@ def apply_over_list(
     if op_name not in _SCALAR_OPS:
         raise ValueError(f"unknown operation {op_name}; choose from {_SCALAR_OPS}")
     func = _SCALAR_OPS[op_name]
+    if cond is not None:
+        return [func(x, operand) for x in lst if cond]
     return [func(x, operand) for x in lst]
 
 
 def reduce_over_list(
-    op_name: str,
-    lst: List[int | float],
+    op_name: str, lst: List[int | float], cond: Optional[bool]
 ) -> int | float:
     """
     Apply a two argument scalar operation to a list and reduce the result
@@ -88,6 +90,9 @@ def reduce_over_list(
     if op_name not in _SCALAR_OPS:
         raise ValueError(f"unknown operation {op_name} choose from {_SCALAR_OPS}")
     func = _SCALAR_OPS[op_name]
+    if cond is not None:
+        cond_list = [x for x in lst if cond]
+        return reduce(lambda acc, x: func(acc, x), cond_list)
     return reduce(lambda acc, x: func(acc, x), lst)
 
 
@@ -103,3 +108,22 @@ def remove_from_list(lst: List, item: str | int | float):
     except ValueError:
         print(f"item {item} not present")
     return lst
+
+
+_TOOLS: dict[str, Callable] = {
+    "apply_over_list": apply_over_list,
+    "reduce_over_list": reduce_over_list,
+    "multiply": multiply,
+    "divide": divide,
+    "add": add,
+    "sub": sub,
+    "pow": pow,
+    "split_string": split_string,
+    "convert_str_to_int": convert_str_to_int,
+    "convert_equals": equals,
+    "greater_than": greater_than,
+    "less_than": less_than,
+    "remove_from_end_of_list": remove_from_end_of_list,
+    "remove_from_list": remove_from_list,
+}
+tool_list = list(_TOOLS.values())
