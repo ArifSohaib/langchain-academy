@@ -11,22 +11,7 @@ from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_ollama import ChatOllama
 from langgraph.graph import END, START, MessagesState, StateGraph
 from langgraph.graph.message import AnyMessage, add_messages
-from tool_functions import (
-    add,
-    apply_over_list,
-    convert_str_to_int,
-    divide,
-    equals,
-    greater_than,
-    less_than,
-    multiply,
-    pow,
-    reduce_over_list,
-    remove_from_end_of_list,
-    remove_from_list,
-    split_string,
-    sub,
-)
+from tool_functions import _TOOLS, tool_list
 from typing_extensions import Callable
 
 # %%
@@ -57,8 +42,8 @@ messages.append(result)
 for message in messages:
     message.pretty_print()
 
+""" Uncomment when running using script. For uv version use uv run streamlit run module-1/local_model/lesson3_chain.py
 # %%
-# uncomment when running using script. For uv version use uv run streamlit run module-1/local_model/lesson3_chain.py
 # note: streamlit formats the content very well. All the code will show up as code and tables will be rendered correctly
 # st.title("List of messages")
 # st.session_state.messages = messages
@@ -71,12 +56,10 @@ for message in messages:
 #         st.chat_message("human").write(msg.content)
 # %%
 
+"""
 
-# %%
 
-
-# %%
-
+""" Uncomment to see tool use on one turn conversation. This will only call the tool but not use its results in the resulting message
 llm = ChatOllama(model="gemma4:e4b", temperature=0.1)
 tool_list = [
     multiply,
@@ -114,29 +97,16 @@ pprint(
 
 # %%
 pprint(tool_call.content)
-# %%
-_TOOLS = {
-    "apply_over_list": apply_over_list,
-    "reduce_over_list": reduce_over_list,
-    "multiply": multiply,
-    "divide": divide,
-    "add": add,
-    "sub": sub,
-    "pow": pow,
-    "split_string": split_string,
-    "equals": equals,
-    "greater_than": greater_than,
-    "less_than": less_than,
-    "remove_from_end_of_list": remove_from_end_of_list,
-    "remove_from_list": remove_from_list,
-}
+"""
 
 
 # %%
-def run_tool_messages(tool_messages, model: str, tool_list: List[Callable]):
+def run_tool_messages(
+    tool_messages, model: str, tool_list: List[Callable], safety_cap: int = 6
+):
     llm = ChatOllama(model=model, temperature=0.1)
     llm_with_tools = llm.bind_tools(tool_list)
-    for _ in range(6):  # safety cap
+    for _ in range(safety_cap):  # safety cap
         ai_msg = llm_with_tools.invoke(tool_messages)
         tool_messages.append(ai_msg)
         if not ai_msg.tool_calls:
@@ -207,6 +177,10 @@ add_messages(initial_messages, new_message)
 
 
 # %%
+llm = ChatOllama(model="gemma4:e4b", temperature=0.1)
+llm_with_tools = llm.bind_tools(tool_list)
+
+
 def tool_calling_llm(state: MessagesState):
     return {"messages": [llm_with_tools.invoke(state["messages"])]}
 
