@@ -1,13 +1,32 @@
 # %%
-from functools import reduce
+
 from pprint import pprint
 from typing import List
 
-import streamlit as st
-from langchain_core.callbacks.manager import Func
+from IPython.display import Image, display
+
+# import streamlit as st
+# from langchain_core.callbacks.manager import Func
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_ollama import ChatOllama
-from langgraph.graph.message import AnyMessage
+from langgraph.graph import END, START, MessagesState, StateGraph
+from langgraph.graph.message import AnyMessage, add_messages
+from tool_functions import (
+    add,
+    apply_over_list,
+    convert_str_to_int,
+    divide,
+    equals,
+    greater_than,
+    less_than,
+    multiply,
+    pow,
+    reduce_over_list,
+    remove_from_end_of_list,
+    remove_from_list,
+    split_string,
+    sub,
+)
 from typing_extensions import Callable
 
 # %%
@@ -54,92 +73,6 @@ for message in messages:
 
 
 # %%
-# tool creation and call
-def multiply(a: int | float, b: int | float) -> int | float:
-    return a * b
-
-
-def divide(a: int | float, b: int | float) -> int | float:
-    if b != 0:
-        return a / b
-    else:
-        raise ValueError("not divisable by b == 0")
-
-
-def add(a: int | float, b: int | float) -> int | float:
-    return a + b
-
-
-def sub(a: int | float, b: int | float) -> int | float:
-    return a - b
-
-
-def pow(a: int | float, b: int | float) -> int | float:
-    return a**b
-
-
-def split_string(a: str) -> list:
-    return [char for char in a]
-
-
-def equals(a: str | float | int, b: str | float | int) -> bool:
-    if type(a) is not type(b):
-        return False
-    return a == b
-
-
-def convert_str_to_int(a: str) -> List[int]:
-    return [ord(x) for x in a]
-
-
-def greater_than(a: float | int, b: float | int) -> bool:
-    if type(a) is not type(b):
-        return False
-    return a > b
-
-
-def less_than(a: float | int, b: float | int) -> bool:
-    if type(a) is not type(b):
-        return False
-    return a < b
-
-
-_SCALAR_OPS = {
-    "multiply": multiply,
-    "divide": divide,
-    "add": add,
-    "sub": sub,
-    "power": pow,
-    "equals": equals,
-    "greater_than": greater_than,
-    "convert_str_to_int": convert_str_to_int,
-    "less_than": less_than,
-}
-
-
-def apply_over_list(
-    op_name: str, lst: List[int | float], operand: int | float
-) -> List[int | float]:
-    """
-    Apply a two argument scalar scalar operation to every element of a list
-    """
-    if op_name not in _SCALAR_OPS:
-        raise ValueError(f"unknown operation {op_name}; choose from {_SCALAR_OPS}")
-    func = _SCALAR_OPS[op_name]
-    return [func(x, operand) for x in lst]
-
-
-def reduce_over_list(
-    op_name: str,
-    lst: List[int | float],
-) -> int | float:
-    """
-    Apply a two argument scalar operation to a list and reduce the result
-    """
-    if op_name not in _SCALAR_OPS:
-        raise ValueError(f"unknown operation {op_name} choose from {_SCALAR_OPS}")
-    func = _SCALAR_OPS[op_name]
-    return reduce(lambda acc, x: func(acc, x), lst)
 
 
 # %%
@@ -158,6 +91,8 @@ tool_list = [
     convert_str_to_int,
     greater_than,
     less_than,
+    remove_from_end_of_list,
+    remove_from_list,
 ]
 llm_with_tools = llm.bind_tools(tool_list)
 
@@ -192,6 +127,8 @@ _TOOLS = {
     "equals": equals,
     "greater_than": greater_than,
     "less_than": less_than,
+    "remove_from_end_of_list": remove_from_end_of_list,
+    "remove_from_list": remove_from_list,
 }
 
 
@@ -238,9 +175,49 @@ check_string_convert_result = run_tool_messages(
 # %%
 check_equality_operators: List[AnyMessage] = [
     HumanMessage(
-        "While the total is less than 10,000 multiple the values in the list [102, 100, 90, 101,100,110,110] by 10 and keep adding. What does the total come out to."
+        "While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools, I am trying to test if you can call tools correctly and link their inputs/outputs as needed."
     )
 ]
 check_equality_operators_result = run_tool_messages(
     check_equality_operators, "gemma4:e4b", tool_list
 )
+# %%
+for msg in check_equality_operators_result:
+    pprint(msg.pretty_print())
+    if isinstance(msg, AIMessage):
+        print(msg.tool_calls)
+
+
+# %%
+# Message State and Annotations
+initial_messages = [
+    AIMessage(content="Hello! How can I assist you?", name="Model"),
+    HumanMessage(
+        content="I'm looking for information on running local LLMs using LangGraph with custom documents in PDF, DOCX, XLSX and PPTX",
+        name="Sohaib",
+    ),
+]
+
+new_message = AIMessage(
+    content="Sure, I can help with that. What specifically are you interested in?",
+    name="Model",
+)
+
+add_messages(initial_messages, new_message)
+
+
+# %%
+def tool_calling_llm(state: MessagesState):
+    return {"messages": [llm_with_tools.invoke(state["messages"])]}
+
+
+# %%
+builder = StateGraph(MessagesState)
+builder.add_node("tool_calling_llm", tool_calling_llm)
+builder.add_edge(START, "tool_calling_llm")
+builder.add_edge("tool_calling_llm", END)
+graph = builder.compile()
+# %%
+
+display(Image(graph.get_graph().draw_mermaid_png()))
+# %%
