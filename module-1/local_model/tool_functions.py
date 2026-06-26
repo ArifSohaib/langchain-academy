@@ -1,7 +1,7 @@
 """## Tools used in other files"""
 
 from functools import reduce
-from typing import List
+from typing import List, Tuple
 
 
 def multiply(a: int | float, b: int | float) -> int | float:
