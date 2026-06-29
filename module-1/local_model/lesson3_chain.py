@@ -3,7 +3,7 @@
 from pprint import pprint
 from typing import List
 
-from IPython.display import Image, display
+from IPython.display import Image, Markdown, display
 
 # import streamlit as st
 # from langchain_core.callbacks.manager import Func
@@ -43,7 +43,6 @@ for message in messages:
     message.pretty_print()
 
 """ Uncomment when running using script. For uv version use uv run streamlit run module-1/local_model/lesson3_chain.py
-# %%
 # note: streamlit formats the content very well. All the code will show up as code and tables will be rendered correctly
 # st.title("List of messages")
 # st.session_state.messages = messages
@@ -54,7 +53,6 @@ for message in messages:
 #         )  # remove .content to see the full JSON
 #     else:
 #         st.chat_message("human").write(msg.content)
-# %%
 
 """
 
@@ -79,10 +77,6 @@ tool_list = [
 ]
 llm_with_tools = llm.bind_tools(tool_list)
 
-# %%
-
-
-# %%
 tool_call = llm_with_tools.invoke(
     [
         HumanMessage(
@@ -95,7 +89,6 @@ pprint(
     tool_call.tool_calls
 )  # THIS is a multi-tool call not one call so this does not work
 
-# %%
 pprint(tool_call.content)
 """
 
@@ -127,10 +120,38 @@ initial_tool_check: List[AnyMessage] = [
     )
 ]
 initial_tool_check_result = run_tool_messages(
-    initial_tool_check, "gemma4:26b", tool_list
+    initial_tool_check, "gemma4:e4b", tool_list
 )
+# %%
+code_question = """How can I corret the following function to be used as a tool in llms such that it is able to reduce over a list OPTIONALLY based on a provided condition.
+The corrected version should run for both while conditions and if conditions.
+def reduce_over_list(
+    op_name: str, lst: List[int | float], cond: Optional[bool]
+) -> int | float:
+    '''
+    Apply a two argument scalar operation to a list and reduce the result
+    '''
+    if op_name not in _SCALAR_OPS:
+        raise ValueError(f"unknown operation {op_name} choose from {_SCALAR_OPS}")
+    if len(lst) == 0:
+        raise ValueError("empty list can't be reduced")
+    func = _SCALAR_OPS[op_name]
+    if cond is not None:
+        cond_list = [x for x in lst if cond]
+        return reduce(lambda acc, x: func(acc, x), cond_list)
+    return reduce(lambda acc, x: func(acc, x), lst)
 
 
+"""
+# %%
+
+# %%
+code_question_llm = ChatOllama(model="gemma4:26b")
+code_question_llm_messages = [HumanMessage(content=code_question)]
+code_question_result = code_question_llm.invoke(code_question_llm_messages)
+# %%
+
+display(Markdown(code_question_result.content))
 # %%
 check_string_convert: List[AnyMessage] = [
     HumanMessage(
