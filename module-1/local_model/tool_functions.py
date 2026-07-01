@@ -84,8 +84,8 @@ def equals(a: str | float | int, b: str | float | int) -> bool:
     """
     equality operator
     Args:
-        a : number or string to compare
-        b : second number or string to compare
+        a : number to compare
+        b : second number to compare
     Returns:
         boolian indicating if the two values are the same
     """
