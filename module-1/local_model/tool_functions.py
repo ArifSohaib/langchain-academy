@@ -139,6 +139,12 @@ def apply_over_list(
 ) -> List[int | float]:
     """
     Apply a two argument scalar scalar operation to every element of a list
+    Args:
+        op_name: the operation to apply from _SCALAR_OPS
+        lst: list to apply the operation to
+        operand: value to use for operation eg for adding a provided number to all values to a list, operand would be the number to add
+    Returns:
+        list with operation applied
     """
     if op_name not in _SCALAR_OPS:
         raise ValueError(f"unknown operation {op_name}; choose from {_SCALAR_OPS}")
@@ -149,6 +155,11 @@ def apply_over_list(
 def reduce_over_list(op_name: str, lst: List[int | float]) -> int | float:
     """
     Apply a two argument scalar operation to a list and reduce the result
+    Args:
+        op_name: the operation to apply from _SCALAR_OPS
+        lst: list to apply the operation to
+    Returns:
+        value after reducing list using operation
     """
     if op_name not in _SCALAR_OPS:
         raise ValueError(f"unknown operation {op_name} choose from {_SCALAR_OPS}")
@@ -172,6 +183,11 @@ def remove_from_end_of_list(lst: List) -> Tuple[List, str | int | float]:
 def remove_first_n(lst: List[int | float], n: int) -> List[int | float]:
     """
     Removes first n values from list
+    Args:
+        lst: list to remove items from
+        n: number of items to remove
+    Returns:
+        list after removing items
     """
     return lst[n:]
 
@@ -179,6 +195,11 @@ def remove_first_n(lst: List[int | float], n: int) -> List[int | float]:
 def remove_last_n(lst: List[int | float], n: int) -> List[int | float]:
     """
     remove last n values from list
+    Args:
+        lst: list to remove items from
+        n: number of items to remove
+    Returns:
+        list after removing items
     """
     return lst[:n]
 
@@ -208,6 +229,15 @@ def remove_from_list(lst: List, item: str | int | float) -> List[str | int | flo
     except ValueError:
         print(f"item {item} not present")
     return lst
+
+
+def sum_over_list(list: List[int | float]) -> int | float:
+    """
+    return sum of a list
+    Args:
+        list: the list to sum
+    """
+    return sum(list)
 
 
 _TOOLS: dict[str, Callable] = {
