@@ -169,7 +169,31 @@ def remove_from_end_of_list(lst: List) -> Tuple[List, str | int | float]:
     return lst, item
 
 
-def remove_from_list(lst: List, item: str | int | float):
+def remove_first_n(lst: List[int | float], n: int) -> List[int | float]:
+    """
+    Removes first n values from list
+    """
+    return lst[n:]
+
+
+def remove_last_n(lst: List[int | float], n: int) -> List[int | float]:
+    """
+    remove last n values from list
+    """
+    return lst[:n]
+
+
+def add_lists(lst1: List[int | float], lst2: List[int | float]) -> List[int | float]:
+    """
+    append list to another list
+    Args:
+        lst1: list to append to (first numbers)
+        lst2: list to add (last numbers)
+    """
+    return lst1 + lst2
+
+
+def remove_from_list(lst: List, item: str | int | float) -> List[str | int | float]:
     """
     remove first instance of a provided value from the list
     Args:
@@ -201,5 +225,8 @@ _TOOLS: dict[str, Callable] = {
     "less_than": less_than,
     "remove_from_end_of_list": remove_from_end_of_list,
     "remove_from_list": remove_from_list,
+    "add_lists": add_lists,
+    "remove_last_n": remove_last_n,
+    "remove_first_n": remove_first_n,
 }
 tool_list = list(_TOOLS.values())
