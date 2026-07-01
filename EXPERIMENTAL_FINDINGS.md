@@ -269,3 +269,317 @@ Name: add
 The total comes out to **9440**.
 
 ```
+
+
+In the agent with memory, it looks like it is not using the provided tools unless the question itself specifies it.
+```bash
+================================ Human Message =================================
+While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools.
+================================ System Message ================================
+You are a helpful assistant tasked with selecting and optionally combining arithmatic operations on scalars or vectors using the provided tools.
+================================ Human Message =================================
+While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools.
+================================ Human Message =================================
+While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools.
+================================ System Message ================================
+You are a helpful assistant tasked with selecting and optionally combining arithmatic operations on scalars or vectors using the provided tools.
+================================ Human Message =================================
+While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools.
+================================== Ai Message ==================================
+Tool Calls:
+  apply_over_list (0b52939e-88f7-4adb-8ef2-a5d836b86b95)
+ Call ID: 0b52939e-88f7-4adb-8ef2-a5d836b86b95
+  Args:
+    lst: [102, 100, 200, 150, 101, 90, 101, 100, 110, 110]
+    op_name: multiply
+    operand: 10
+================================= Tool Message =================================
+Name: apply_over_list
+[1020, 1000, 2000, 1500, 1010, 900, 1010, 1000, 1100, 1100]
+================================== Ai Message ==================================
+The process requires iteratively summing the elements of the list, stopping when the next addition would make the total 10,000 or greater.
+The multiplied list is: $[1020, 1000, 2000, 1500, 1010, 900, 1010, 1000, 1100, 1100]$.
+Here is the step-by-step accumulation:
+1.  **Start Total:** 0
+2.  **Add 1020:** Total = 1020
+3.  **Add 1000:** Total = $1020 + 1000 = 2020$
+4.  **Add 2000:** Total = $2020 + 2000 = 4020$
+5.  **Add 1500:** Total = $4020 + 1500 = 5520$
+6.  **Add 1010:** Total = $5520 + 1010 = 6530$
+7.  **Add 900:** Total = $6530 + 900 = 7430$
+8.  **Add 1010:** Total = $7430 + 1010 = 8440$
+9.  **Add 1000:** Total = $8440 + 1000 = 9440$
+10. **Check next element (1100):** $9440 + 1100 = 10540$. Since $10540$ is $\ge 10,000$, the process stops before adding this value.
+The total that comes out before reaching 10,000 is **9440**.
+
+```
+I tested the above with a followup to test memory use with a complex multi-step question and it returned this.
+
+```bash
+================================ Human Message =================================
+While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools.
+================================ System Message ================================
+You are a helpful assistant tasked with selecting and optionally combining arithmatic operations on scalars or vectors using the provided tools.
+================================ Human Message =================================
+While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools.
+================================ Human Message =================================
+While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools.
+================================ System Message ================================
+You are a helpful assistant tasked with selecting and optionally combining arithmatic operations on scalars or vectors using the provided tools.
+================================ Human Message =================================
+While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools.
+================================== Ai Message ==================================
+Tool Calls:
+  apply_over_list (0b52939e-88f7-4adb-8ef2-a5d836b86b95)
+ Call ID: 0b52939e-88f7-4adb-8ef2-a5d836b86b95
+  Args:
+    lst: [102, 100, 200, 150, 101, 90, 101, 100, 110, 110]
+    op_name: multiply
+    operand: 10
+================================= Tool Message =================================
+Name: apply_over_list
+[1020, 1000, 2000, 1500, 1010, 900, 1010, 1000, 1100, 1100]
+================================== Ai Message ==================================
+The process requires iteratively summing the elements of the list, stopping when the next addition would make the total 10,000 or greater.
+The multiplied list is: $[1020, 1000, 2000, 1500, 1010, 900, 1010, 1000, 1100, 1100]$.
+Here is the step-by-step accumulation:
+1.  **Start Total:** 0
+2.  **Add 1020:** Total = 1020
+3.  **Add 1000:** Total = $1020 + 1000 = 2020$
+4.  **Add 2000:** Total = $2020 + 2000 = 4020$
+5.  **Add 1500:** Total = $4020 + 1500 = 5520$
+6.  **Add 1010:** Total = $5520 + 1010 = 6530$
+7.  **Add 900:** Total = $6530 + 900 = 7430$
+8.  **Add 1010:** Total = $7430 + 1010 = 8440$
+9.  **Add 1000:** Total = $8440 + 1000 = 9440$
+10. **Check next element (1100):** $9440 + 1100 = 10540$. Since $10540$ is $\ge 10,000$, the process stops before adding this value.
+The total that comes out before reaching 10,000 is **9440**.
+================================ Human Message =================================
+From the original list remove the first 3 values and append [99,80,75] to the list. Then answer the same question.
+================================== Ai Message ==================================
+Tool Calls:
+  remove_from_list (70fc0a97-ff7d-4727-86ee-5943054e9ce5)
+ Call ID: 70fc0a97-ff7d-4727-86ee-5943054e9ce5
+  Args:
+    item: 102
+    lst: [102, 100, 200, 150, 101, 90, 101, 100, 110, 110]
+  remove_from_list (26f453c3-fc09-4d11-aaaa-6f3123173cad)
+ Call ID: 26f453c3-fc09-4d11-aaaa-6f3123173cad
+  Args:
+    item: 100
+    lst: [100, 200, 150, 101, 90, 101, 100, 110, 110]
+  remove_from_list (4cf3870e-d95a-4554-ac5e-f3dad2abe06c)
+ Call ID: 4cf3870e-d95a-4554-ac5e-f3dad2abe06c
+  Args:
+    item: 200
+    lst: [200, 150, 101, 90, 101, 100, 110, 110]
+  append_to_list (bdd1d535-437d-4ec2-ba32-6c687fc3e0a9)
+ Call ID: bdd1d535-437d-4ec2-ba32-6c687fc3e0a9
+  Args:
+    lst: [150, 101, 90, 101, 100, 110, 110]
+    append_items: [99, 80, 75]
+================================= Tool Message =================================
+Name: remove_from_list
+[100, 200, 150, 101, 90, 101, 100, 110, 110]
+================================= Tool Message =================================
+Name: remove_from_list
+[200, 150, 101, 90, 101, 100, 110, 110]
+================================= Tool Message =================================
+Name: remove_from_list
+[150, 101, 90, 101, 100, 110, 110]
+================================= Tool Message =================================
+Name: append_to_list
+Error: append_to_list is not a valid tool, try one of [apply_over_list, reduce_over_list, multiply, divide, add, sub, pow, split_string, convert_str_to_int, equals, greater_than, less_than, remove_from_end_of_list, remove_from_list].
+================================== Ai Message ==================================
+Tool Calls:
+  apply_over_list (fe715ebe-dcfb-46bf-baec-fc8fb36fb1a7)
+ Call ID: fe715ebe-dcfb-46bf-baec-fc8fb36fb1a7
+  Args:
+    lst: [150, 101, 90, 101, 100, 110, 110, 99, 80, 75]
+    op_name: multiply
+    operand: 10
+================================= Tool Message =================================
+Name: apply_over_list
+[1500, 1010, 900, 1010, 1000, 1100, 1100, 990, 800, 750]
+================================== Ai Message ==================================
+The list derived from your instructions, after multiplication by 10, is: $[1500, 1010, 900, 1010, 1000, 1100, 1100, 990, 800, 750]$.
+We will now sum these values iteratively, stopping before the total reaches 10,000.
+1.  **Start Total:** 0
+2.  **Add 1500:** Total = 1500
+3.  **Add 1010:** Total = $1500 + 1010 = 2510$
+4.  **Add 900:** Total = $2510 + 900 = 3410$
+5.  **Add 1010:** Total = $3410 + 1010 = 4420$
+6.  **Add 1000:** Total = $4420 + 1000 = 5420$
+7.  **Add 1100:** Total = $5420 + 1100 = 6520$
+8.  **Add 1100:** Total = $6520 + 1100 = 7620$
+9.  **Add 990:** Total = $7620 + 990 = 8610$
+10. **Add 800:** Total = $8610 + 800 = 9410$
+11. **Check next element (750):** $9410 + 750 = 10160$. Since $10160 > 10000$, we stop here.
+The total sum before exceeding 10,000 is **10160** (Wait, the stopping condition is *at* 10000, so we must check if the sum of all items fits or if we stop when the *next* addition exceeds 10000).
+Lets re-evaluate the strict rule: sum elements until the next element causes the running total to exceed 10000.
+*   $1500$
+*   $1500 + 1010 = 2510$
+*   $2510 + 900 = 3410$
+*   $3410 + 1000 = 4410$
+*   $4410 + 1100 = 5510$
+*   $5510 + 990 = 6500$
+*   $6500 + 800 = 7300$
+*   $7300 + 750 = 8050$
+The total sum is $1500 + 1010 + 900 + 1000 + 1100 + 990 + 800 + 750 = 8050$. This value does not exceed 10000, so the full sum is the answer, unless the intention was to stop at the *first* addition that crosses 10000.
+Assuming the instruction means: Sum all available numbers *unless* the sum exceeds 10000, in which case, you only sum up to the point *just before* the overflow. Since the total sum ($8050$) is below $10000$, the answer is the full sum.
+The final sum is **8050**.
+```
+Meaning it is still is trying to do the math without calling the provided tools.
+
+I added additional tools to append to list and remve n values from the first or last part of the list.
+Running the quesions again with gemma4:e4b it refused to run the request that could be done either with a while loop or use intermediate answers(which it was able to use previously)
+
+```bash
+================================ Human Message =================================
+While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools.
+================================== Ai Message ==================================
+I cannot perform this operation because it requires a loop with a condition (stopping when the total reaches 10,000). The provided tools only allow for single, direct calculations and do not support iterative logic or conditional checking based on a running total.
+================================ Human Message =================================
+From the original list remove the first 3 values and append [99,80,75] to the list. Then answer the same question. Remember to use the provided tools to answer not your memory
+================================== Ai Message ==================================
+Tool Calls:
+  remove_first_n (016303cc-a67a-4ab8-aaca-a1b775be70e7)
+ Call ID: 016303cc-a67a-4ab8-aaca-a1b775be70e7
+  Args:
+    lst: [102, 100, 200, 150, 101, 90, 101, 100, 110, 110]
+    n: 3
+================================= Tool Message =================================
+Name: remove_first_n
+[150, 101, 90, 101, 100, 110, 110]
+================================== Ai Message ==================================
+Tool Calls:
+  add_lists (a5cce75f-f2c4-4b69-ab21-3998e0fbb937)
+ Call ID: a5cce75f-f2c4-4b69-ab21-3998e0fbb937
+  Args:
+    lst1: [150, 101, 90, 101, 100, 110, 110]
+    lst2: [99, 80, 75]
+================================= Tool Message =================================
+Name: add_lists
+[150, 101, 90, 101, 100, 110, 110, 99, 80, 75]
+================================== Ai Message ==================================
+I understand the updated list is `[150, 101, 90, 101, 100, 110, 110, 99, 80, 75]`.
+However, I must reiterate the limitation: the core request requires a loop that *keeps adding* and *stops* when a running total reaches or exceeds 10,000. The provided tools are designed for single, discrete mathematical operations and do not support the iterative logic or conditional stopping mechanism necessary to calculate this running total sequentially.
+Therefore, even with the updated list, I cannot answer "What does the total come out to BEFORE reaching 10,000?" using the available tools.
+```
+
+
+Changing to gemma4:26b resulted in it combining its own logic with the tools to answer the qestion.
+```bash
+================================ Human Message =================================
+While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools.
+================================== Ai Message ==================================
+I cannot perform this operation because it requires a loop with a condition (stopping when the total reaches 10,000). The provided tools only allow for single, direct calculations and do not support iterative logic or conditional checking based on a running total.
+================================ Human Message =================================
+From the original list remove the first 3 values and append [99,80,75] to the list. Then answer the same question. Remember to use the provided tools to answer not your memory
+================================== Ai Message ==================================
+Tool Calls:
+  remove_first_n (016303cc-a67a-4ab8-aaca-a1b775be70e7)
+ Call ID: 016303cc-a67a-4ab8-aaca-a1b775be70e7
+  Args:
+    lst: [102, 100, 200, 150, 101, 90, 101, 100, 110, 110]
+    n: 3
+================================= Tool Message =================================
+Name: remove_first_n
+[150, 101, 90, 101, 100, 110, 110]
+================================== Ai Message ==================================
+Tool Calls:
+  add_lists (a5cce75f-f2c4-4b69-ab21-3998e0fbb937)
+ Call ID: a5cce75f-f2c4-4b69-ab21-3998e0fbb937
+  Args:
+    lst1: [150, 101, 90, 101, 100, 110, 110]
+    lst2: [99, 80, 75]
+================================= Tool Message =================================
+Name: add_lists
+[150, 101, 90, 101, 100, 110, 110, 99, 80, 75]
+================================== Ai Message ==================================
+I understand the updated list is `[150, 101, 90, 101, 100, 110, 110, 99, 80, 75]`.
+However, I must reiterate the limitation: the core request requires a loop that *keeps adding* and *stops* when a running total reaches or exceeds 10,000. The provided tools are designed for single, discrete mathematical operations and do not support the iterative logic or conditional stopping mechanism necessary to calculate this running total sequentially.
+Therefore, even with the updated list, I cannot answer "What does the total come out to BEFORE reaching 10,000?" using the available tools.
+================================ Human Message =================================
+While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools.
+================================== Ai Message ==================================
+Tool Calls:
+  apply_over_list (d26bb206-d196-4f95-b053-cea9b2397012)
+ Call ID: d26bb206-d196-4f95-b053-cea9b2397012
+  Args:
+    lst: [102, 100, 200, 150, 101, 90, 101, 100, 110, 110]
+    op_name: multiply
+    operand: 10
+================================= Tool Message =================================
+Name: apply_over_list
+[1020, 1000, 2000, 1500, 1010, 900, 1010, 1000, 1100, 1100]
+================================== Ai Message ==================================
+Tool Calls:
+  reduce_over_list (0db80072-6f0e-43c6-a6dd-5f53a4404da7)
+ Call ID: 0db80072-6f0e-43c6-a6dd-5f53a4404da7
+  Args:
+    lst: [1020, 1000, 2000, 1500, 1010, 900, 1010, 1000, 1100, 1100]
+    op_name: add
+================================= Tool Message =================================
+Name: reduce_over_list
+11640
+================================== Ai Message ==================================
+The total sum of the multiplied values is 11,640, which exceeds 10,000. To find the total *before* reaching 10,000, we need to look at the running sum of the values: 1020, 1000, 2000, 1500, 1010, 900, 1010, 1000, 1100, 1100.
+1. 1020
+2. 1020 + 1000 = 2020
+3. 2020 + 2000 = 4020
+4. 4020 + 1500 = 5520
+5. 5520 + 1010 = 6530
+6. 6530 + 900 = 7430
+7. 7430 + 1010 = 8440
+8. 8440 + 1000 = 9440
+9. 9440 + 1100 = 10540 (This exceeds 10,000)
+The total before reaching 10,000 is 9,440.
+================================ Human Message =================================
+From the original list remove the first 3 values and append [99,80,75] to the list. Then answer the same question. Remember to use the provided tools to answer not your memory
+================================== Ai Message ==================================
+Tool Calls:
+  remove_first_n (65ec2996-8189-4ca6-a7be-eddec7a38e34)
+ Call ID: 65ec2996-8189-4ca6-a7be-eddec7a38e34
+  Args:
+    lst: [102, 100, 200, 150, 101, 90, 101, 100, 110, 110]
+    n: 3
+================================= Tool Message =================================
+Name: remove_first_n
+[150, 101, 90, 101, 100, 110, 110]
+================================== Ai Message ==================================
+Tool Calls:
+  add_lists (669d5c9e-c3ec-459b-a55e-2b78b26ccad1)
+ Call ID: 669d5c9e-c3ec-459b-a55e-2b78b26ccad1
+  Args:
+    lst1: [150, 101, 90, 101, 100, 110, 110]
+    lst2: [99, 80, 75]
+================================= Tool Message =================================
+Name: add_lists
+[150, 101, 90, 101, 100, 110, 110, 99, 80, 75]
+================================== Ai Message ==================================
+Tool Calls:
+  apply_over_list (4bf349a9-ddbe-4935-af9a-188af56c35df)
+ Call ID: 4bf349a9-ddbe-4935-af9a-188af56c35df
+  Args:
+    lst: [150, 101, 90, 101, 100, 110, 110, 99, 80, 75]
+    op_name: multiply
+    operand: 10
+================================= Tool Message =================================
+Name: apply_over_list
+[1500, 1010, 900, 1010, 1000, 1100, 1100, 990, 800, 750]
+================================== Ai Message ==================================
+The running sum of the multiplied values [1500, 1010, 900, 1010, 1000, 1100, 1100, 990, 800, 750] is:
+1. 1500
+2. 1500 + 1010 = 2510
+3. 2510 + 900 = 3410
+4. 3410 + 1010 = 4420
+5. 4420 + 1000 = 5420
+6. 5420 + 1100 = 6520
+7. 6520 + 1100 = 7620
+8. 7620 + 990 = 8610
+9. 8610 + 800 = 9410
+10. 9410 + 750 = 10160 (Exceeds 10,000)
+The total before reaching 10,000 is 9,410.
+
+```
