@@ -59,8 +59,9 @@ for m in messages_multistep_result["messages"]:
 # %%
 messages_complex: List[AnyMessage] = [HumanMessage(content=complex_question)]
 messages_complex_result = react_graph.invoke({"messages": messages_complex})
+# %%%
 for m in messages_complex_result["messages"]:
-    display(Markdown(m.pretty_print()))
+    m.pretty_print()
 
 # %%
 
@@ -69,7 +70,4 @@ messages_string_result = react_graph.invoke({"messages": messages_string})
 # %%
 for m in messages_string_result["messages"]:
     m.pretty_print()
-
-# %%
-print(messages_string)
 # %%
