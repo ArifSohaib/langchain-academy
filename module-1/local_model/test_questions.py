@@ -1,0 +1,4 @@
+simple_question = "testing basic tool call what is 1024 multiplied by 64."
+text_simple_question = "How many 'r' s are there in the word 'strawberrry'. Don't change the spelling and use the provided tools."
+multiple_step_question = "Add 3 and 4. Multiply the output by 2. Divide the output by 5"
+complex_question = "While the total is less than 10,000 multiple the values in the list [102, 100, 200, 150, 101, 90, 101,100,110,110,] by 10 and keep adding. What does the total come out to BEFORE reaching 10,000. Use the provided tools."
