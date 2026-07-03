@@ -4,11 +4,13 @@ from typing import List
 from IPython.display import Image, display
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.messages.utils import AnyMessage
+from langchain_core.runnables.config import RunnableConfig
 from langchain_ollama import ChatOllama
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState
 from langgraph.graph.state import StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
+from langgraph.pregel.main import Runnable
 from test_questions import (
     complex_question,
     complex_question_followup,
@@ -55,7 +57,8 @@ react_graph = builder.compile(checkpointer=memory)
 display(Image(react_graph.get_graph(xray=True).draw_mermaid_png()))
 
 # %%
-config = {"configurable": {"thread_id": "1"}}
+config: RunnableConfig = {"configurable": {"thread_id": "1"}}
+
 complex_question_mesage: List[AnyMessage] = [HumanMessage(content=complex_question)]
 complex_question_response = react_graph.invoke(
     {"messages": complex_question_mesage}, config
