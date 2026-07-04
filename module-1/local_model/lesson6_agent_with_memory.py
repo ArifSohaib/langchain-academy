@@ -10,7 +10,6 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState
 from langgraph.graph.state import StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.pregel.main import Runnable
 from test_questions import (
     complex_question,
     complex_question_followup,
