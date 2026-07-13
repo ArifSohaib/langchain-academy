@@ -4,6 +4,7 @@ from pprint import pprint
 from typing import List
 
 from IPython.display import Image, display
+from langchain_core.prompts import AIMessagePromptTemplate
 from langgraph.graph import END, START, StateGraph
 from typing_extensions import Annotated, TypedDict
 from langchain_core.messages import AIMessage, AnyMessage, HumanMessage
@@ -205,8 +206,9 @@ def message_state_erase_last_node(state:MessagesState):
         return {"messages":AIMessage(content="no message to delete")}
     last_messages = state['messages'][:-2]
     print("deleting message")
-    [RemoveMessage(id=m.id) for m in last_messages]
-
+    deleted_messages = [RemoveMessage(id=m.id) for m in last_messages]
+    remaining_messages = add_messages(state['messages'], deleted_messages)
+    return {"messages":add_messages(remaining_messages,[AIMessage(content="deleted last message")])}
 
 def erase_message_cond(state:MessagesState)->Literal["node_2", "remove_msg"]:
     if state["messages"][-1].content == "delete last node":
@@ -236,9 +238,36 @@ message_state_graph2_result = message_state_graph2.invoke({"messages":[AIMessage
 pprint(message_state_graph2_result)
 
 # %%
-add_messages(message_state_graph2_result['messages'], AIMessage(content="delete last node"))
+new_messages = add_messages(message_state_graph2_result['messages'], AIMessage(content="delete last node"))
 # %%
-message_state_graph2_result2 = message_state_graph2.invoke(message_state_graph2_result)
+for msg in new_messages:
+    msg.pretty_print()
+
+# %%
+message_state_graph2_result2 = message_state_graph2.invoke(new_messages)
 for msg in message_state_graph2_result2['messages']:
+    msg.pretty_print()
+# %%
+
+for msg in new_messages:
+    msg.pretty_print()
+# %%
+static_messages = MessagesState(messages=[
+    AIMessage(content="hello world", id="1"),
+    HumanMessage(content="hello ai", id="2"),
+    AIMessage(content="message 3", id="3"),
+    HumanMessage(content="reply to message 3",id="4")
+])
+
+static_messages_state = MessagesState(messages=add_messages(static_messages['messages'],AIMessage(content="message 4",id='5')))
+
+for msg in static_messages_state['messages']:
+    msg.pretty_print()
+#%%
+deleted_messages_static = [RemoveMessage(id=m.id) for m in static_messages_state['messages'][2:]]
+remaining_messages_static = add_messages(static_messages_state['messages'], deleted_messages_static)
+# %%
+remaining_messages_state = MessagesState(messages=remaining_messages)
+for msg in remaining_messages_state['messages']:
     msg.pretty_print()
 # %%
