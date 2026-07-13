@@ -7,7 +7,7 @@ from langgraph.graph.message import MessagesState
 from typing import Literal, List
 from langgraph.graph import add_messages
 from langgraph.checkpoint.memory import MemorySaver
-from IPython.display import display, Image
+from IPython.display import display, Image, Markdown
 # %%
 
 model = ChatOllama(model="gemma4:e4b")
@@ -35,7 +35,7 @@ def summarize_conversation(state:SummaryState):
         summary_message = "create a summary of the conversdation above"
     messages = add_messages(state["messages"], [HumanMessage(content=summary_message)])
     response = model.invoke(messages)
-    delete_messages = [RemoveMessage(msg.id) for msg in messages['messages'][:-2]]
+    delete_messages = [RemoveMessage(msg.id) for msg in messages[:-2]]
     return {"summary":response.content, "messages":delete_messages}
 
 def should_continue(state:SummaryState)->Literal["summary", END]:
@@ -70,11 +70,13 @@ result = summary_graph.invoke(input=messages_state, config=config)
 for msg in result['messages']:
     msg.pretty_print()
 # %%
-next_question = add_messages(result,
+messages_so_far_ = add_messages(result['messages'],
     [HumanMessage(content=
         "What are some changes or differences between presistant memory via a local db vs using MemorySaver from langgraph.checkpoint.memory")])
 # %%
-result = summary_graph.invoke(input={"messages":next_question}, config=config)
+messages_state = SummaryState(messages=messages_so_far_,summary="")
+# %%
+result = summary_graph.invoke(input=messages_state, config=config)
 # %%
 for msg in result['messages']:
     msg.pretty_print()
@@ -82,9 +84,12 @@ for msg in result['messages']:
 
 # %%
 
-next_question = add_messages(result,
+messages_so_far_ = add_messages(result['messages'],
     [HumanMessage(content="Can I use duckdb or sqlite?")])
-
+messages_so_far = SummaryState(messages=messages_so_far_, summary="")
 result = summary_graph.invoke(input={"messages":next_question}, config=config)
 
+# %%
+
+display(Markdown(result['summary']))
 # %%
