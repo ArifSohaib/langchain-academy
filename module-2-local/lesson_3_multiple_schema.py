@@ -68,7 +68,7 @@ class OverallStateSplit(TypedDict):
     question: str
     answer: str
     notes: str
-
+# %%
 def thinking_node_split(state:InputStateSplit)->OverallStateSplit:
     return {"question":state["question"], "answer":"bye", "notes":"--found some notes"}
 def answer_node_split(state:OverallStateSplit)->OutputStateSplit:
@@ -85,3 +85,7 @@ split_graph = split_graph_build.compile()
 display(Image(split_graph.get_graph().draw_mermaid_png()))
 # %%
 split_graph_result = split_graph.invoke({"question":"test"})
+
+# %%
+pprint(split_graph_result)
+# %%
