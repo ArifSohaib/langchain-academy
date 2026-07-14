@@ -2,7 +2,7 @@
 import sqlite3
 from langchain_ollama import ChatOllama
 from langgraph.graph import StateGraph, END, START
-from langchain.messages import AnyMessage, RemoveMessage, SystemMessage, HumanMessage, AIMessage
+from langchain.messages import AnyMessage, RemoveMessage, SystemMessage, HumanMessage
 from typing import List, Literal
 from langgraph.graph import add_messages
 from langgraph.checkpoint.sqlite import SqliteSaver
@@ -11,8 +11,6 @@ from pathlib import Path
 from langchain_core.runnables import RunnableConfig
 from IPython.display import display, Image
 from pprint import pprint
-
-from pandas.io.formats.printing import Any
 # %%
 
 #conn = sqlite3.connect(":memory",) #in memory sqlite
