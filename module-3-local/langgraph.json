@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "agent": "./part02_bonus_using_local_dev.py:graph"
+  },
+  "env": ".env"
+}
