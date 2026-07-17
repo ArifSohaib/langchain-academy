@@ -58,6 +58,7 @@ new_state = graph.get_state(thread)
 # %%
 pprint(new_state.values['messages'])
 # %%
+
 def go_to_next(graph:CompiledStateGraph, thread:RunnableConfig):
     for event in graph.stream(None, config=thread, stream_mode="values"):
         event['messages'][-1].pretty_print()
