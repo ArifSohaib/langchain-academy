@@ -4,19 +4,15 @@ Main change is that I am not using the langchain_community based modules since t
 """
 # %%
 from IPython.display import display, Image, Markdown
-from langchain.messages import AIMessage, SystemMessage, HumanMessage, AnyMessage
+from langchain.messages import AIMessage, SystemMessage, HumanMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import StateGraph, MessagesState, START, END
-from langgraph.prebuilt import tools_condition, ToolNode
-from langgraph.errors import EmptyInputError
 from langchain_ollama import ChatOllama
-from typing import TypedDict, Annotated, Any
+from typing import  Annotated
 from langchain_tavily import TavilySearch
-from langgraph.errors import InvalidUpdateError, NodeInterrupt
 from langchain_core.documents import Document
 from utils import get_wiki_content, extract_json
 import operator
-from typing import Annotated
 from langgraph.types import Send
 # %%
 
@@ -26,6 +22,7 @@ class SearchState(MessagesState):
     max_doc_count: int
     answer_docs: Annotated[list[Document], operator.add]
     found_docs: Annotated[int, operator.add]
+    path: Annotated[str, operator.add]
 
 # %%
 def web_search(state: SearchState):
@@ -40,7 +37,7 @@ def web_search(state: SearchState):
         document = Document(page_content=doc['content'], title=doc['title'], metadata={"source": doc['url'], "score": doc['score']})
         documents.append(document)
     # note: no "question" key here — avoids concurrent-write conflicts across parallel branches
-    return {"found_docs": len(documents), "answer_docs": documents}
+    return {"found_docs": len(documents), "answer_docs": documents,"path":"tavily"}
 
 # %%
 def wikipedia_search(state: SearchState):
@@ -48,7 +45,7 @@ def wikipedia_search(state: SearchState):
     retrieve list of documents from Wikipedia api
     """
     answer_docs = get_wiki_content(state['question'],state['max_doc_count'])
-    return {"found_docs":len(answer_docs), "answer_docs":answer_docs}
+    return {"found_docs":len(answer_docs), "answer_docs":answer_docs,"path":"wiki"}
 # %%
 llm = ChatOllama(model="gemma4:e4b")
 
@@ -91,15 +88,24 @@ def continue_to_wiki_search(state: SearchState):
         for q in state["questions"]
     ]
 
+def combine_docs(state:SearchState):
+    """
+    combine the results from both graphs
+    """
+    return {"answer_docs":state["answer_docs"], "found_docs": state['found_docs'], "path":state["path"]}
+
+
 search_builder = StateGraph(SearchState)
 search_builder.add_node("get_questions", get_questions)
 search_builder.add_node("web_search", web_search)
 search_builder.add_node("wikipedia_search", wikipedia_search)
+search_builder.add_node("combine_docs", combine_docs)
 search_builder.add_edge(START, "get_questions")
-# search_builder.add_conditional_edges("get_questions", continue_to_web_search, ["web_search"])
+search_builder.add_conditional_edges("get_questions", continue_to_web_search, ["web_search"])
 search_builder.add_conditional_edges("get_questions", continue_to_wiki_search, ["wikipedia_search"])
-# search_builder.add_edge("web_search", END)
-search_builder.add_edge("wikipedia_search", END)
+search_builder.add_edge("web_search", "combine_docs")
+search_builder.add_edge("wikipedia_search", "combine_docs")
+search_builder.add_edge("combine_docs",END)
 search_graph = search_builder.compile(checkpointer=MemorySaver())
 # %%
 display(Image(search_graph.get_graph().draw_mermaid_png()))
@@ -123,7 +129,7 @@ graph_hist = [h for h in search_graph.get_state_history({"configurable":{"thread
 
 # %%
 
-print(graph_hist[-1].values)
+print(graph_hist[-3].values)
 
 # %%
 print(graph_hist[-3].values['questions'])
