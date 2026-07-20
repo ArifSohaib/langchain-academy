@@ -86,8 +86,9 @@ for event in graph.stream(None, to_fork.config, stream_mode="values"):
 
 # %%
 # since this was a complex question with multiple tool calls, it will need to be resumed multiple times before it gets an AIMessage output
-
 while prev_event and isinstance(prev_event,dict) and not isinstance(prev_event['messages'][-1],AIMessage) and prev_event['messages'][-1].content != '':
+    #note the configurable here it is not using the to_fork.config because that ends at a specific checkpoint, for the multi-tool call
+    # idea, we need to stream the next value after that chcekpoint was run
     for event in graph.stream(None, {"configurable":{"thread_id":"1"}}, stream_mode="values"):
         prev_event = event
         event['messages'][-1].pretty_print()
