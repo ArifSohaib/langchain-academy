@@ -104,7 +104,7 @@ search_graph = search_builder.compile(checkpointer=MemorySaver())
 # %%
 display(Image(search_graph.get_graph().draw_mermaid_png()))
 # %%
-test_search = HumanMessage(content="tourism in Pakistan")
+test_search = HumanMessage(content="graph algorithms")
 search_graph_result = search_graph.invoke({"messages":[test_search]}, {"configurable":{"thread_id":"1"}})
 # %%
 print(search_graph_result.keys())
@@ -116,6 +116,8 @@ print(search_graph_result['answer_docs'][0].metadata)
 # %%
 for doc in search_graph_result['answer_docs']:
     print(doc.metadata['source'])
+# %%
+display(Markdown(search_graph_result['answer_docs'][0].page_content))
 # %%
 graph_hist = [h for h in search_graph.get_state_history({"configurable":{"thread_id":"1"}})]
 
