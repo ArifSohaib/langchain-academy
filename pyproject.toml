@@ -18,6 +18,8 @@ dependencies = [
     "langgraph-checkpoint-postgres>=3.1.0",
     "transformers>=4.52.0",
     "langgraph-checkpoint-sqlite>=3.1.0",
+    "langgraph-cli[inmem]>=0.4.0",
+    "langgraph-runtime-inmem>=0.30,<0.31",
 ]
 
 
