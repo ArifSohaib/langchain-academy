@@ -55,8 +55,7 @@ print(to_fork.config)
 # %%
 to_fork.values['messages'][-1].pretty_print()
 # %%
-#split from this checkpoint id
-#same as original question by removing the final sum
+#split from this checkpoint id with simple question
 fork_config = graph.update_state(to_fork.config,
     {"messages":[HumanMessage(
     content="multiply 2.5 by 2",
