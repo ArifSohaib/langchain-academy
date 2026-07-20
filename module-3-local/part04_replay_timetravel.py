@@ -71,10 +71,6 @@ for event in graph.stream(None, fork_config, stream_mode="values"):
 for event in graph.stream(None, {"configurable":{"thread_id":"1"}}, stream_mode="values"):
     event['messages'][-1].pretty_print()
 # %%
-
-for event in graph.stream(None, fork_config, stream_mode="values"):
-    event['messages'][-1].pretty_print()
-# %%
 #move forward from original fork
 print(to_fork.config)
 # %%
