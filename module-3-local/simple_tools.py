@@ -5,7 +5,7 @@ def multiply(a:float|int, b:float|int)->float|int:
     """
     multiply a and b
     returns:
-        float or int
+        a multiplied by b
     """
     return a * b
 
@@ -68,10 +68,12 @@ def apply_to_list(a:list[float|int], op:str, operand:float|int)->list[float|int]
     """
     available_ops:dict[str, func] = {
         "add":add,
-        "mul":multiply,
+        "multiply":multiply,
         "divide":divide,
         "sub":sub,
-        "pow":pow
+        "pow":pow,
+        "split_string":split_string,
+        "convert_string_to_ord":convert_string_to_ord
     }
     if op in available_ops:
         return  [available_ops[op](x, operand) for x in a]
